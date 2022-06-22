@@ -1,22 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import "./App.css";
+import Child from "./Child";
 
 function App() {
+  const [data, setData] = useState(null);
+  const [count, setCount] = useState(1);
+
+  const fetchNames = async () => {
+    try {
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${count}`);
+      const data = await res.json();
+      setData(data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    fetchNames();
+
+    return () => {
+      setData(null);
+    };
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        {data && <h2>Pokemon in Parent: {data && data.name}</h2>}
+        <button onClick={fetchNames}>Fetch Names</button>
+        <button onClick={() => setCount(count + 1)}>++</button>
+        Count:{count}
+        <Child data={data} />
       </header>
     </div>
   );
